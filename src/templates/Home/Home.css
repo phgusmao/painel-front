@@ -1,0 +1,15 @@
+table {
+  text-align: center;
+  padding: 10px;
+}
+
+th, td{
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  color: rgb(87, 87, 87);
+  font-weight: bold;
+}
+
+th{
+  color: darkblue;
+}
