@@ -1,25 +1,60 @@
 import './Home.css';
-import api from "../../services/api";
+import { Component } from 'react';
 
-function Home() {
-  return (
-      <table className=''>
-      <tr>
-        <th>FORNECEDORES</th>
-        <th>ENVIO</th>
-        <th>FATURAMENTO DIÁRIO</th>
-        <th>FATURAMENTO MENSAL</th>
-        <th>ROTINA</th>
-      </tr>
-      <tr>
-        <td>Nissin 01/00</td>
-        <td> ENVIADO </td>
-        <td>100k</td>
-        <td>1M</td>
-        <td>S_ArqGenexis</td>
-      </tr>
-    </table>
-  );
+class Home extends Component {
+  state = {
+    datas: []
+  };
+
+  componentDidMount() {
+    fetch('http://localhost:3333/painel')
+    .then(res => res.json())
+    .then(res => {
+      this.setState({
+        datas: res
+      })
+    })
+  }
+
+  render() {
+
+    // console.log(this.state.datas[1])
+
+    this.state.datas.map(data => {
+      console.log(data)
+    })
+
+    return (
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>FORNECEDORES</th>
+              <th>ENVIO</th>
+              <th>FATURAMENTO DIÁRIO</th>
+              <th>FATURAMENTO MENSAL</th>
+              <th>ROTINA</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.datas.map((data, index) => (
+              <tr key={index}>
+                <td>{data.fornecedor}</td>
+                <td> {data.enviado}</td>
+                <td>{data.valor_liquido}</td>
+                <td>{data.valor_mensal}</td>
+                <td>{data.rotina}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </main>  
+    )
+  };
 }
 
+
+
 export default Home;
+
+
