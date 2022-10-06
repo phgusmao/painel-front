@@ -1,12 +1,14 @@
 import './Home.css';
 import { Component } from 'react';
 import { TextInput } from '../../components/TextInput';
-import { Datas } from '../../components/datas';
 
 class Home extends Component {
   state = {
     datas: [],
-    searchValue: ''
+    allDatas: [],
+    searchValue: '',
+    dataPerPage: 5,
+    page: 0
   };
 
   componentDidMount() {
@@ -30,12 +32,9 @@ class Home extends Component {
 
     const {searchValue, datas} = this.state;
 
-    const filteredDatas = !!searchValue ?
-      datas.filter(data => {
-        console.log(data)
-        return data['FORNECEDOR'].toLowerCase().includes(searchValue);
-      })
-      :datas;
+    const filteredDatas = datas.filter(d => {
+      return d['FORNECEDOR'].toLowerCase().includes(searchValue) 
+    })
 
     return (
       <main>
@@ -45,23 +44,6 @@ class Home extends Component {
         <TextInput searchValue={searchValue} handleChange={this.handleChange} />
 
         <table>
-        <thead>
-            <tr>
-              <th>FORNECEDORES</th>
-              <th>EMPRESA</th>
-              <th>FILIAL</th>
-              <th>ENVIO</th>
-              <th>FATURAMENTO DIÁRIO</th>
-              <th>DATA DO ARQUIVO</th>
-              <th>ROTINA</th>
-            </tr>
-          </thead>
-          {filteredDatas.length > 0 && (
-          <Datas datas={filteredDatas}/>
-        )}
-    </table>
-
-        {/* <table>
           <thead>
             <tr>
               <th>FORNECEDORES</th>
@@ -73,7 +55,7 @@ class Home extends Component {
               <th>ROTINA</th>
             </tr>
           </thead>
-          {filteredDatas.length > 0 && (
+          {searchValue.length === 0 && (
           <tbody>
             {this.state.datas.map((data, index) => (
               <tr key={index}>
@@ -96,13 +78,42 @@ class Home extends Component {
             ))}
           </tbody>
           )}
-        </table> */}
+          {searchValue.length > 0 && (
+            <tbody>
+              {filteredDatas.map((data, index) => (
+                <tr key={index}>
+                  <td>{data['FORNECEDOR'].toUpperCase()}</td>
+                  <td>{data['EMPRESA']}</td>
+                  <td>{data['FILIAL']}</td>
+                  {data['ENVIADO'] === null && (
+                    <td> SEM DADOS</td>
+                  )}
+                  {data['ENVIADO'] === 1 && (
+                    <td> ENVIADO </td>
+                  )}
+                  {data['ENVIADO'] === 2 && (
+                    <td>NÃO ENVIADO </td>
+                  )}
+                  <td>{data['VALOR_LIQUIDO']}</td>
+                  <td>{data['DATA_ARQUIVO']}</td>
+                  <td>{data['ROTINA']}</td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+
+          {filteredDatas.length === 0 && (
+            <tbody>
+            <tr>
+              <td>Fornecedor não encontrado</td>
+            </tr>
+          </tbody>
+          )}
+        </table>
       </main>  
     )
   };
 }
-
-
 
 export default Home;
 
