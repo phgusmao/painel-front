@@ -1,13 +1,14 @@
 import './Home.css';
 import { Component } from 'react';
 import { TextInput } from '../../components/TextInput';
+import { Button } from '../../components/Buttom';
 
 class Home extends Component {
   state = {
     datas: [],
     allDatas: [],
     searchValue: '',
-    dataPerPage: 5,
+    dataPerPage: 15,
     page: 0
   };
 
@@ -16,11 +17,22 @@ class Home extends Component {
   }
 
   loadDatas () {
+    const {page, dataPerPage} = this.state
     fetch('http://localhost:3333/painel')
     .then(res => res.json())
     .then(res => {
-        this.setState({ datas: res })
+        this.setState({ datas: res.slice(page, dataPerPage), allDatas: res })
     })
+  }
+
+  loadMoreDatas = async () => {
+    const { page, dataPerPage, allDatas, datas } = this.state;
+
+    const nextPage = page + dataPerPage;
+    const nextDatas = allDatas.slice(nextPage, nextPage + dataPerPage)
+    datas.push(...nextDatas)
+
+    this.setState({datas, page: nextPage})
   }
 
   handleChange = (e) => {
@@ -30,9 +42,11 @@ class Home extends Component {
 
   render() {
 
-    const {searchValue, datas} = this.state;
+    const {searchValue, datas, page, datasPerPage, allDatas} = this.state;
 
-    const filteredDatas = datas.filter(d => {
+    const noMoreDatas = page + datasPerPage >= allDatas.length;
+
+    const filteredDatas = allDatas.filter(d => {
       return d['FORNECEDOR'].toLowerCase().includes(searchValue) 
     })
 
@@ -110,6 +124,12 @@ class Home extends Component {
           </tbody>
           )}
         </table>
+
+        <div className='button-container'>
+          {!searchValue && (
+            <Button disables={noMoreDatas} text="Carregar mais dados" onClick={this.loadMoreDatas}/>
+          )}
+        </div>
       </main>  
     )
   };
